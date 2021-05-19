@@ -8,7 +8,7 @@ export default defineComponent({
   setup() {
     return () => (
       <>
-        <ElButton type="primary">首页</ElButton>
+        <ElButton type="primary">环境设置</ElButton>
       </>
     )
   },

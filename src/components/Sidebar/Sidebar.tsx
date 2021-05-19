@@ -1,5 +1,8 @@
-import { defineComponent, reactive } from 'vue'
+import type { JSON, SidebarItem } from '@/global'
+import { defineComponent, ref, unref } from 'vue'
 import { ElMenu, ElMenuItem, ElMenuItemGroup, ElSubmenu } from 'element-plus'
+import { listenerRouteChange } from '@/logics/mitt/routeChange'
+import { REDIRECT_NAME } from '@/router/constants'
 
 export default defineComponent({
   components: {
@@ -8,142 +11,99 @@ export default defineComponent({
     ElMenuItemGroup,
     ElSubmenu,
   },
-  setup() {
-    const SidebarDatasDefaultOpeneds = reactive(['1', '1-4'])
 
-    const SidebarDatas = reactive([
-      {
-        index: '1',
-        title: '导航一',
-        icon: 'el-icon-lcation',
-        children: [
-          {
-            title: '分组1',
-            group: [
-              {
-                index: '1-1',
-                title: '选项1',
-              },
-              {
-                index: '1-2',
-                title: '选项2',
-              },
-            ],
-          },
+  props: {
+    sidebar: {
+      type: Object as () => SidebarItem[],
+      required: true,
+    },
+  },
 
-          {
-            title: '分组2',
-            group: [
-              {
-                index: '1-3',
-                title: '选项3',
-              },
-            ],
-          },
+  setup({ sidebar }) {
+    // currentActiveMenu default by index: 1
+    const currentActiveMenu = ref('1')
 
-          {
-            title: '分组3',
-            index: '1-4',
-            children: [
-              {
-                index: '1-4-1',
-                title: '选项1',
-              },
+    listenerRouteChange((route) => {
+      if (route.name === REDIRECT_NAME) return
 
-              {
-                index: '1-4-2',
-                title: '选项2',
-              },
+      let currentItem = sidebar.find((item) => {
+        const { route: currentRoute } = item
+        return currentRoute.name === route.name
+      })
+      currentActiveMenu.value = currentItem?.index as string
+    })
 
-              {
-                index: '1-4-3',
-                title: '选项3',
-              },
-            ],
-          },
-        ],
-      },
-
-      {
-        index: '2',
-        title: '导航二',
-        icon: 'el-icon-menu',
-      },
-
-      {
-        index: '3',
-        title: '导航三',
-        icon: 'el-icon-menu',
-      },
-      {
-        index: '4',
-        title: '导航四',
-        icon: 'el-icon-menu',
-      },
-    ])
-
-    return () => (
-      <ElMenu default-openeds={SidebarDatasDefaultOpeneds}>
-        {SidebarDatas.map((item, n) => {
-          console.log(item)
-          return (
-            <ElMenuItem
-              index={item.index}
-              v-slots={{ title: () => <>{item.title}</> }}
-            >
-              <i class="el-icon-menu"></i>
-            </ElMenuItem>
-          )
-        })}
-        {/* <ElSubmenu
-          index="1"
-          v-slots={{
-            title: () => (
-              <>
-                <i class="el-icon-location"></i>
-                <span>导航一</span>
-              </>
-            ),
-          }}
+    const genSidebar = (datas: SidebarItem[]) => {
+      return (
+        <ElMenu
+          default-active={unref(currentActiveMenu)}
+          unique-opened={true}
+          router={true}
         >
-          <ElMenuItemGroup title="分组一">
-            <ElMenuItem index="1-1">选项1</ElMenuItem>
-            <ElMenuItem index="1-2">选项2</ElMenuItem>
-          </ElMenuItemGroup>
+          {datas.map((item) => {
+            const hasChildren = Object.keys(item).includes('children')
+            return hasChildren ? (
+              <ElSubmenu
+                index={item.index}
+                v-slots={{
+                  title: () => (
+                    <>
+                      <i class={item.icon}></i>
+                      <span>{item.title}</span>
+                    </>
+                  ),
+                }}
+              >
+                {item.children?.map((childItem) => {
+                  const hasGroup = Object.keys(childItem).includes('group')
+                  const hasChildren =
+                    Object.keys(childItem).includes('children')
+                  if (hasGroup) {
+                    return (
+                      <ElMenuItemGroup title={childItem.title}>
+                        {childItem.group?.map((childItemGroup) => {
+                          return (
+                            <ElMenuItem index={childItemGroup.index}>
+                              {childItemGroup.title}
+                            </ElMenuItem>
+                          )
+                        })}
+                      </ElMenuItemGroup>
+                    )
+                  }
 
-          <ElMenuItemGroup title="分组2">
-            <ElMenuItem index="1-3">选项3</ElMenuItem>
-          </ElMenuItemGroup>
+                  if (hasChildren) {
+                    return (
+                      <ElSubmenu
+                        index={childItem.index}
+                        v-slots={{ title: () => <>{childItem.title}</> }}
+                      >
+                        {childItem.children?.map((childItemChildren) => {
+                          return (
+                            <ElMenuItem index={childItemChildren.index}>
+                              {childItemChildren.title}
+                            </ElMenuItem>
+                          )
+                        })}
+                      </ElSubmenu>
+                    )
+                  }
+                })}
+              </ElSubmenu>
+            ) : (
+              <ElMenuItem
+                index={item.index}
+                route={item.route}
+                v-slots={{ title: () => <>{item.title}</> }}
+              >
+                <i class={item.icon}></i>
+              </ElMenuItem>
+            )
+          })}
+        </ElMenu>
+      )
+    }
 
-          <ElSubmenu index="1-4" v-slots={{ title: () => <>子导航</> }}>
-            <ElMenuItem index="1-4-1">选项1</ElMenuItem>
-            <ElMenuItem index="1-4-2">选项2</ElMenuItem>
-            <ElMenuItem index="1-4-3">选项3</ElMenuItem>
-          </ElSubmenu>
-        </ElSubmenu>
-
-        <ElMenuItem index="2" v-slots={{ title: () => <>导航二</> }}>
-          <i class="el-icon-menu"></i>
-        </ElMenuItem>
-
-        <ElMenuItem
-          index="3"
-          v-slots={{
-            title: () => <>导航三</>,
-          }}
-        >
-          <i class="el-icon-document"></i>
-        </ElMenuItem>
-
-        <ElMenuItem
-          index="4"
-          v-slots={{
-            title: () => <>导航四</>,
-          }}
-        >
-          <i class="el-icon-menu"></i>
-        </ElMenuItem> */}
-      </ElMenu>
-    )
+    return () => genSidebar(sidebar)
   },
 })
