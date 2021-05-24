@@ -1,14 +1,11 @@
-import type { RouteParamsRaw } from 'vue-router'
 import type { SidebarItem } from './global'
-
-import { defineComponent, reactive, unref } from 'vue'
+import { defineComponent, reactive } from 'vue'
+import Sidebar from '@/components/Sidebar/Sidebar'
 import { ElContainer, ElHeader, ElMain, ElAside } from 'element-plus'
-import { RouterView } from 'vue-router'
-import Sidebar from './components/Sidebar/Sidebar'
+import { useRoute, RouterView } from 'vue-router'
 
 export default defineComponent({
   components: {
-    Sidebar,
     ElContainer,
     ElHeader,
     ElMain,
@@ -37,6 +34,13 @@ export default defineComponent({
       },
     ])
 
+    const getTitle = (): string => {
+      const route = useRoute()
+      const routeName = route.name
+      const result = SidebarDatas.find((item) => item.route.name === routeName)
+      return result?.title || ''
+    }
+
     return () => (
       <>
         <ElContainer style={{ 'min-height': '100vh' }}>
@@ -44,7 +48,13 @@ export default defineComponent({
             <Sidebar style={{ height: '100%' }} sidebar={SidebarDatas} />
           </ElAside>
           <ElContainer>
-            <ElHeader></ElHeader>
+            <ElHeader
+              class={
+                'border-b-1 border-solid border-gray-400 border-opacity-50'
+              }
+            >
+              <h1>{getTitle()}</h1>
+            </ElHeader>
             <ElMain>
               <RouterView />
             </ElMain>

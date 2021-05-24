@@ -1,6 +1,6 @@
 import type { App } from 'vue'
-import { RouteParamsRaw } from 'vue-router'
 
+import { RouteParamsRaw } from 'vue-router'
 declare global {
   interface Window {
     __APP__: App<Element>

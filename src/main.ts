@@ -1,6 +1,8 @@
 import { createApp } from 'vue'
 import 'element-plus/packages/theme-chalk/src/base.scss'
 import './assets/index.css'
+import 'virtual:windi.css'
+
 import App from './App'
 import router, { setupRouter } from '@/router'
 import { setupRouterGuard } from '@/router/guard'
