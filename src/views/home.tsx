@@ -5,8 +5,9 @@ export default defineComponent({
   components: {
     ElButton,
   },
-  setup() {
-    return () => (
+
+  render() {
+    return (
       <>
         <ElButton type="primary">首页</ElButton>
       </>

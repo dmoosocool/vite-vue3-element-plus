@@ -11,7 +11,8 @@ export default defineComponent({
     ElMain,
     ElAside,
   },
-  setup() {
+
+  render() {
     const SidebarDatas: SidebarItem[] = reactive([
       {
         index: '1',
@@ -41,7 +42,7 @@ export default defineComponent({
       return result?.title || ''
     }
 
-    return () => (
+    return (
       <>
         <ElContainer style={{ 'min-height': '100vh' }}>
           <ElAside>
