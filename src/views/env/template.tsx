@@ -55,8 +55,8 @@ const tpl = (ctx: any) => {
             <ElDialog
               title={
                 ctx.dialogDatas.addEnvDialog.id === undefined
-                  ? '添加开户环境'
-                  : '修改开户环境'
+                  ? '添加环境'
+                  : '修改环境'
               }
               modelValue={ctx.dialogStatus.addEnvDialog}
               appendToBody={true}
@@ -132,7 +132,7 @@ const tpl = (ctx: any) => {
               </ElForm>
             </ElDialog>
             <ElButton type="primary" plain onClick={ctx.openAddEnvDialog}>
-              添加开户环境
+              添加环境
             </ElButton>
             <ElButton type="primary" plain>
               添加渠道链接
@@ -143,7 +143,7 @@ const tpl = (ctx: any) => {
         <ElRow class="w-full">
           <ElCol span={12} offset={6}>
             <h1 class="mb-4" style={{ fontSize: '20px', fontWeight: 100 }}>
-              开户环境
+              环境
             </h1>
           </ElCol>
         </ElRow>
