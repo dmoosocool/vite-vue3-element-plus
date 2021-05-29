@@ -1,0 +1,13 @@
+{
+  "envs": [
+    {
+      "id": 1,
+      "name": "PRD",
+      "address": "https://sjkh.essence.com.cn/h5kh/index.htm",
+      "status": 0,
+      "created": 1622196562801,
+      "updated": 1622196577737
+    }
+  ],
+  "links": []
+}

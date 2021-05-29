@@ -5,55 +5,235 @@ import {
   ElInput,
   ElRow,
   ElCol,
-  ElSelect,
-  ElOption,
-  ElDatePicker,
   ElTable,
   ElTableColumn,
+  ElButton,
+  ElDialog,
+  ElNotification,
+  ElTag,
 } from 'element-plus'
 
 const tpl = (ctx: any) => {
+  const addEnvDialogRules = {
+    envName: [
+      {
+        required: true,
+        message: '请输入环境名称',
+        trigger: 'blur',
+      },
+      {
+        min: 1,
+        max: 10,
+        message: '长度不能大于10',
+        trigger: 'blur',
+      },
+    ],
+    envAddress: [
+      {
+        type: 'url',
+        required: true,
+        message: '请输入包含(http|https)协议的环境地址',
+        trigger: 'blur',
+      },
+    ],
+  }
+
+  const handlerEnvEdit = (index: unknown, row: unknown) => {
+    ctx.dialogStatus.addEnvDialog = true
+    ctx.dialogDatas.addEnvDialog = row
+  }
+
   return (
     <>
       <ElContainer direction="vertical">
         <ElRow class="w-full h-5 mt-10">
           <ElCol span={12} offset={6}></ElCol>
         </ElRow>
-        <ElRow class="w-full">
+
+        <ElRow class="w-full mb-2">
           <ElCol span={12} offset={6}>
-            <ElForm inline class={'grid-content'}>
-              <ElFormItem label="选项名称">
-                <ElInput
-                  type="text"
-                  v-model={ctx.formData.name}
-                  maxlength={10}
-                  showWordLimit
-                />
-              </ElFormItem>
+            <ElDialog
+              title={
+                ctx.dialogDatas.addEnvDialog.id === undefined
+                  ? '添加开户环境'
+                  : '修改开户环境'
+              }
+              modelValue={ctx.dialogStatus.addEnvDialog}
+              appendToBody={true}
+              closeOnClickModal={false}
+              destroyOnClose={true}
+              beforeClose={(done: Function) => {
+                ctx.dialogStatus.addEnvDialog = false
+                ctx.dialogDatas.addEnvDialog = {}
+                done()
+              }}
+              v-slots={{
+                footer() {
+                  return (
+                    <>
+                      <ElButton
+                        plain
+                        onClick={() => ctx.$refs['addEnvDialog'].resetFields()}
+                      >
+                        重置
+                      </ElButton>
+                      <ElButton
+                        type="primary"
+                        plain
+                        onClick={() => {
+                          ctx.$refs['addEnvDialog'].validate(
+                            (valid: boolean) => {
+                              if (valid) {
+                                // console.log(ctx.dialogDatas.addEnvDialog)
+                              } else {
+                                // console.log(ctx.$notify)
+                                ElNotification({
+                                  type: 'error',
+                                  title: '表单填写错误',
+                                  message: '请核对表单信息后再次提交',
+                                })
+                                return false
+                              }
+                            }
+                          )
+                        }}
+                      >
+                        {ctx.dialogDatas.addEnvDialog.id === undefined
+                          ? '提交'
+                          : '修改'}
+                      </ElButton>
+                    </>
+                  )
+                },
+              }}
+            >
+              <ElForm
+                ref="addEnvDialog"
+                model={ctx.dialogDatas.addEnvDialog}
+                rules={addEnvDialogRules}
+              >
+                <ElFormItem label="环境名称" prop="name">
+                  <ElInput
+                    modelValue={ctx.dialogDatas.addEnvDialog.name}
+                    onInput={(value: string) =>
+                      (ctx.dialogDatas.addEnvDialog.name = value)
+                    }
+                  />
+                </ElFormItem>
 
-              <ElFormItem label="活动区域">
-                <ElSelect v-model={ctx.formData.region}>
-                  <ElOption label="区域一" value="Shanghai"></ElOption>
-                  <ElOption label="区域二" value="Beijing"></ElOption>
-                </ElSelect>
-              </ElFormItem>
-
-              <ElFormItem label="活动时间">
-                <ElCol span={11}>
-                  <ElDatePicker
-                    placeholder="选择日期"
-                    type="date"
-                    v-model={ctx.formData.date1}
-                  ></ElDatePicker>
-                </ElCol>
-              </ElFormItem>
-            </ElForm>
+                <ElFormItem label="环境地址" prop="address">
+                  <ElInput
+                    modelValue={ctx.dialogDatas.addEnvDialog.address}
+                    onInput={(value: string) =>
+                      (ctx.dialogDatas.addEnvDialog.address = value)
+                    }
+                  />
+                </ElFormItem>
+              </ElForm>
+            </ElDialog>
+            <ElButton type="primary" plain onClick={ctx.openAddEnvDialog}>
+              添加开户环境
+            </ElButton>
+            <ElButton type="primary" plain>
+              添加渠道链接
+            </ElButton>
           </ElCol>
         </ElRow>
 
         <ElRow class="w-full">
           <ElCol span={12} offset={6}>
-            <ElTable border data={ctx.tableData} maxHeight="540px">
+            <h1 class="mb-4" style={{ fontSize: '20px', fontWeight: 100 }}>
+              开户环境
+            </h1>
+          </ElCol>
+        </ElRow>
+
+        <ElRow class="w-full">
+          <ElCol span={12} offset={6}>
+            <ElTable border stripe data={ctx.tableData.envs} maxHeight="240px">
+              <ElTableColumn
+                prop="name"
+                label="环境名称"
+                width="180"
+              ></ElTableColumn>
+              <ElTableColumn prop="address" label="环境地址"></ElTableColumn>
+              <ElTableColumn
+                width="80"
+                label="状态"
+                v-slots={{
+                  default: (scope: any) => (
+                    <>
+                      {scope.row.status == '1' ? (
+                        <ElTag effect="dark" size="small" type="success">
+                          已启用
+                        </ElTag>
+                      ) : (
+                        <ElTag effect="dark" size="small" type="danger">
+                          已禁用
+                        </ElTag>
+                      )}
+                    </>
+                  ),
+                }}
+              ></ElTableColumn>
+              <ElTableColumn
+                label="添加日期"
+                width="180"
+                v-slots={{
+                  default: (scope: any) => (
+                    <>
+                      <span>
+                        {new Date(scope.row.created).toLocaleString()}
+                      </span>
+                    </>
+                  ),
+                }}
+              ></ElTableColumn>
+              <ElTableColumn
+                label="修改日期"
+                width="180"
+                v-slots={{
+                  default: (scope: any) => (
+                    <>
+                      <span>
+                        {new Date(scope.row.updated).toLocaleString()}
+                      </span>
+                    </>
+                  ),
+                }}
+              ></ElTableColumn>
+              <ElTableColumn
+                label="操作"
+                width="80"
+                v-slots={{
+                  default: (scope: any) => (
+                    <>
+                      <ElButton
+                        type="primary"
+                        size="mini"
+                        onClick={() => handlerEnvEdit(scope.$index, scope.row)}
+                      >
+                        编辑
+                      </ElButton>
+                    </>
+                  ),
+                }}
+              ></ElTableColumn>
+            </ElTable>
+          </ElCol>
+        </ElRow>
+
+        <ElRow class="w-full mt-8">
+          <ElCol span={12} offset={6}>
+            <h1 class="mb-4" style={{ fontSize: '20px', fontWeight: 100 }}>
+              渠道链接
+            </h1>
+          </ElCol>
+        </ElRow>
+
+        <ElRow class="w-full">
+          <ElCol span={12} offset={6}>
+            <ElTable border stripe data={ctx.tableData.envs} maxHeight="240px">
               <ElTableColumn
                 prop="date"
                 fixed

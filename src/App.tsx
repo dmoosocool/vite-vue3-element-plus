@@ -54,7 +54,9 @@ export default defineComponent({
                 'border-b-1 border-solid border-gray-400 border-opacity-50'
               }
             >
-              <h1>{getTitle()}</h1>
+              <h1 class={'mt-4'} style={{ fontSize: '20px', fontWeight: 100 }}>
+                {getTitle()}
+              </h1>
             </ElHeader>
             <ElMain>
               <RouterView />
