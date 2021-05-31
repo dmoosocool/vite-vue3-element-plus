@@ -1,6 +1,5 @@
-import type {} from 'element-plus'
-import { defineComponent, reactive, ref } from 'vue'
-import { ElNotification, ElForm } from 'element-plus'
+import { defineComponent, reactive, ref, nextTick } from 'vue'
+import { ElNotification, ElLoading } from 'element-plus'
 
 import { main } from './template'
 import axios from '@/utils/axios'
@@ -9,6 +8,7 @@ export default defineComponent({
   setup() {
     const formData = reactive({ name: '', region: '', date1: '' })
     const tableData = reactive({ envs: [] })
+
     const dialogStatus = reactive({ addEnvDialog: false })
     const dialogDatas = reactive({
       addEnvDialog: {
@@ -22,6 +22,7 @@ export default defineComponent({
     })
 
     const addEnvDialog = ref()
+    const envTableRef = ref('envTableRef')
 
     const addEnvDialogRules = reactive({
       name: [
@@ -56,17 +57,16 @@ export default defineComponent({
       dialogDatas.addEnvDialog = row
     }
 
-    const loading = reactive({ envs: false })
+    // const loading = ElLoading.service({ fullscreen: true })
 
-    const getEnvDatas = (callback?: () => void) => {
-      loading.envs = true
+    const loading = ElLoading.service({ target: envTableRef.value })
+
+    const getEnvDatas = async () => {
+      const res = await axios.get('/api/envs')
+      tableData.envs = res.data
       setTimeout(() => {
-        axios.get('/api/envs').then((response) => {
-          tableData.envs = response.data
-          loading.envs = false
-          callback && callback()
-        })
-      }, 3000)
+        loading.close()
+      }, 2000)
     }
 
     const handlerEnvEditSubmit = () => {
@@ -124,6 +124,7 @@ export default defineComponent({
       dialogStatus,
       dialogDatas,
       loading,
+      envTableRef,
     }
   },
 

@@ -105,7 +105,13 @@ const tpl = (ctx: any) => {
 
         <ElRow class="w-full">
           <ElCol span={12} offset={6}>
-            <ElTable border stripe data={ctx.tableData.envs} maxHeight="240px">
+            <ElTable
+              ref="envTableRef"
+              border
+              stripe
+              data={ctx.tableData.envs}
+              maxHeight="240px"
+            >
               <ElTableColumn
                 prop="name"
                 label="环境名称"
@@ -192,17 +198,75 @@ const tpl = (ctx: any) => {
           <ElCol span={12} offset={6}>
             <ElTable border stripe data={ctx.tableData.envs} maxHeight="240px">
               <ElTableColumn
-                prop="date"
-                fixed
-                label="日期"
+                prop="name"
+                label="渠道名称"
                 width="180"
               ></ElTableColumn>
               <ElTableColumn
-                prop="name"
-                label="姓名"
-                width="180"
+                prop="address"
+                label="渠道地址"
+                formatter={(row: any) => {
+                  return (
+                    <ElLink type="primary" href={row.address} target="_blank">
+                      {row.address}
+                    </ElLink>
+                  )
+                }}
               ></ElTableColumn>
-              <ElTableColumn prop="address" label="地址"></ElTableColumn>
+              <ElTableColumn
+                width="80"
+                label="状态"
+                sortable
+                prop="stauts"
+                formatter={(row: any) => {
+                  return row.status == '1' ? (
+                    <ElTag effect="dark" size="small" type="success">
+                      已启用
+                    </ElTag>
+                  ) : (
+                    <ElTag effect="dark" size="small" type="danger">
+                      已禁用
+                    </ElTag>
+                  )
+                }}
+              ></ElTableColumn>
+              <ElTableColumn
+                label="添加日期"
+                width="180"
+                prop="created"
+                sortable
+                formatter={(row: unknown) =>
+                  new Date((row as any).created).toLocaleString()
+                }
+              ></ElTableColumn>
+              <ElTableColumn
+                label="修改日期"
+                width="180"
+                sortable
+                prop="updated"
+                formatter={(row: unknown) =>
+                  new Date((row as any).updated).toLocaleString()
+                }
+              ></ElTableColumn>
+              <ElTableColumn
+                label="操作"
+                width="80"
+                v-slots={{
+                  default: (scope: any) => (
+                    <>
+                      <ElButton
+                        type="primary"
+                        size="mini"
+                        onClick={() =>
+                          ctx.handlerEnvEdit(scope.$index, scope.row)
+                        }
+                      >
+                        编辑
+                      </ElButton>
+                    </>
+                  ),
+                }}
+              ></ElTableColumn>
             </ElTable>
           </ElCol>
         </ElRow>
