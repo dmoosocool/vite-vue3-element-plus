@@ -9,40 +9,11 @@ import {
   ElTableColumn,
   ElButton,
   ElDialog,
-  ElNotification,
+  ElLink,
   ElTag,
 } from 'element-plus'
 
 const tpl = (ctx: any) => {
-  const addEnvDialogRules = {
-    envName: [
-      {
-        required: true,
-        message: '请输入环境名称',
-        trigger: 'blur',
-      },
-      {
-        min: 1,
-        max: 10,
-        message: '长度不能大于10',
-        trigger: 'blur',
-      },
-    ],
-    envAddress: [
-      {
-        type: 'url',
-        required: true,
-        message: '请输入包含(http|https)协议的环境地址',
-        trigger: 'blur',
-      },
-    ],
-  }
-
-  const handlerEnvEdit = (index: unknown, row: unknown) => {
-    ctx.dialogStatus.addEnvDialog = true
-    ctx.dialogDatas.addEnvDialog = row
-  }
-
   return (
     <>
       <ElContainer direction="vertical">
@@ -73,30 +44,14 @@ const tpl = (ctx: any) => {
                     <>
                       <ElButton
                         plain
-                        onClick={() => ctx.$refs['addEnvDialog'].resetFields()}
+                        onClick={() => ctx.addEnvDialog.resetFields()}
                       >
                         重置
                       </ElButton>
                       <ElButton
                         type="primary"
                         plain
-                        onClick={() => {
-                          ctx.$refs['addEnvDialog'].validate(
-                            (valid: boolean) => {
-                              if (valid) {
-                                // console.log(ctx.dialogDatas.addEnvDialog)
-                              } else {
-                                // console.log(ctx.$notify)
-                                ElNotification({
-                                  type: 'error',
-                                  title: '表单填写错误',
-                                  message: '请核对表单信息后再次提交',
-                                })
-                                return false
-                              }
-                            }
-                          )
-                        }}
+                        onClick={() => ctx.handlerEnvEditSubmit()}
                       >
                         {ctx.dialogDatas.addEnvDialog.id === undefined
                           ? '提交'
@@ -110,7 +65,7 @@ const tpl = (ctx: any) => {
               <ElForm
                 ref="addEnvDialog"
                 model={ctx.dialogDatas.addEnvDialog}
-                rules={addEnvDialogRules}
+                rules={ctx.addEnvDialogRules}
               >
                 <ElFormItem label="环境名称" prop="name">
                   <ElInput
@@ -156,51 +111,51 @@ const tpl = (ctx: any) => {
                 label="环境名称"
                 width="180"
               ></ElTableColumn>
-              <ElTableColumn prop="address" label="环境地址"></ElTableColumn>
+              <ElTableColumn
+                prop="address"
+                label="环境地址"
+                formatter={(row: any) => {
+                  return (
+                    <ElLink type="primary" href={row.address} target="_blank">
+                      {row.address}
+                    </ElLink>
+                  )
+                }}
+              ></ElTableColumn>
               <ElTableColumn
                 width="80"
                 label="状态"
-                v-slots={{
-                  default: (scope: any) => (
-                    <>
-                      {scope.row.status == '1' ? (
-                        <ElTag effect="dark" size="small" type="success">
-                          已启用
-                        </ElTag>
-                      ) : (
-                        <ElTag effect="dark" size="small" type="danger">
-                          已禁用
-                        </ElTag>
-                      )}
-                    </>
-                  ),
+                sortable
+                prop="stauts"
+                formatter={(row: any) => {
+                  return row.status == '1' ? (
+                    <ElTag effect="dark" size="small" type="success">
+                      已启用
+                    </ElTag>
+                  ) : (
+                    <ElTag effect="dark" size="small" type="danger">
+                      已禁用
+                    </ElTag>
+                  )
                 }}
               ></ElTableColumn>
               <ElTableColumn
                 label="添加日期"
                 width="180"
-                v-slots={{
-                  default: (scope: any) => (
-                    <>
-                      <span>
-                        {new Date(scope.row.created).toLocaleString()}
-                      </span>
-                    </>
-                  ),
-                }}
+                prop="created"
+                sortable
+                formatter={(row: unknown) =>
+                  new Date((row as any).created).toLocaleString()
+                }
               ></ElTableColumn>
               <ElTableColumn
                 label="修改日期"
                 width="180"
-                v-slots={{
-                  default: (scope: any) => (
-                    <>
-                      <span>
-                        {new Date(scope.row.updated).toLocaleString()}
-                      </span>
-                    </>
-                  ),
-                }}
+                sortable
+                prop="updated"
+                formatter={(row: unknown) =>
+                  new Date((row as any).updated).toLocaleString()
+                }
               ></ElTableColumn>
               <ElTableColumn
                 label="操作"
@@ -211,7 +166,9 @@ const tpl = (ctx: any) => {
                       <ElButton
                         type="primary"
                         size="mini"
-                        onClick={() => handlerEnvEdit(scope.$index, scope.row)}
+                        onClick={() =>
+                          ctx.handlerEnvEdit(scope.$index, scope.row)
+                        }
                       >
                         编辑
                       </ElButton>

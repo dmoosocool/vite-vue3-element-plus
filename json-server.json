@@ -2,11 +2,27 @@
   "envs": [
     {
       "id": 1,
-      "name": "PRD",
+      "name": "PRD1",
       "address": "https://sjkh.essence.com.cn/h5kh/index.htm",
-      "status": 0,
+      "status": 1,
       "created": 1622196562801,
-      "updated": 1622196577737
+      "updated": 1622451368315
+    },
+    {
+      "name": "PRD3",
+      "address": "https://www.baidu.com",
+      "id": 2,
+      "status": 0,
+      "created": 0,
+      "updated": 1622451296991
+    },
+    {
+      "name": "UAT",
+      "address": "https://uat.com",
+      "id": 3,
+      "status": 1,
+      "created": 1622450901102,
+      "updated": 1622451374121
     }
   ],
   "links": []
