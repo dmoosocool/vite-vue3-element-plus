@@ -6,10 +6,12 @@
     "web:dev": "vite",
     "web:serve": "vite preview",
     "web:build": "vue-tsc --noEmit && vite build",
-    "dev": "run-p db web:dev"
+    "dev": "run-p db web:dev",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "element-plus": "^1.0.2-beta.44",
+    "patch-package": "^6.4.7",
     "sass": "^1.32.13",
     "vue": "^3.0.5",
     "vue-router": "^4.0.8",

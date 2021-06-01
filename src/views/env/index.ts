@@ -1,4 +1,4 @@
-import { defineComponent, reactive, ref, nextTick } from 'vue'
+import { defineComponent, reactive, ref, unref, nextTick, onMounted } from 'vue'
 import { ElNotification, ElLoading } from 'element-plus'
 
 import { main } from './template'
@@ -7,22 +7,30 @@ import axios from '@/utils/axios'
 export default defineComponent({
   setup() {
     const formData = reactive({ name: '', region: '', date1: '' })
-    const tableData = reactive({ envs: [] })
-
-    const dialogStatus = reactive({ addEnvDialog: false })
+    const tableData = reactive({ envs: [], links: [] })
+    const dialogStatus = reactive({ env: false, link: false })
     const dialogDatas = reactive({
-      addEnvDialog: {
+      env: {
         name: '',
         address: '',
-        id: 0,
+        id: undefined,
+        status: 0,
+        created: 0,
+        updated: 0,
+      },
+
+      link: {
+        name: '',
+        address: '',
+        id: undefined,
         status: 0,
         created: 0,
         updated: 0,
       },
     })
 
+    //! ------------------------------------------------------- Env Begin
     const addEnvDialog = ref()
-    const envTableRef = ref('envTableRef')
 
     const addEnvDialogRules = reactive({
       name: [
@@ -48,44 +56,33 @@ export default defineComponent({
       ],
     })
 
-    const openAddEnvDialog = () => {
-      dialogStatus.addEnvDialog = !dialogStatus.addEnvDialog
-    }
-
-    const handlerEnvEdit = (index: number, row: any) => {
-      dialogStatus.addEnvDialog = true
-      dialogDatas.addEnvDialog = row
-    }
-
-    // const loading = ElLoading.service({ fullscreen: true })
-
-    const loading = ElLoading.service({ target: envTableRef.value })
-
     const getEnvDatas = async () => {
       const res = await axios.get('/api/envs')
       tableData.envs = res.data
-      setTimeout(() => {
-        loading.close()
-      }, 2000)
+    }
+
+    const handlerEnvEdit = (index: number, row: any) => {
+      dialogStatus.env = true
+      dialogDatas.env = row
     }
 
     const handlerEnvEditSubmit = () => {
       addEnvDialog.value?.validate((valid: boolean) => {
         if (valid) {
-          const isEdit = dialogDatas.addEnvDialog.id !== 0
+          const isEdit = dialogDatas.env.id !== 0
           let query: Promise<any>
 
           if (isEdit) {
-            dialogDatas.addEnvDialog.updated = +new Date()
+            dialogDatas.env.updated = +new Date()
             query = axios.put(
-              `/api/envs/${dialogDatas.addEnvDialog.id}`,
-              dialogDatas.addEnvDialog
+              `/api/envs/${dialogDatas.env.id}`,
+              dialogDatas.env
             )
           } else {
-            dialogDatas.addEnvDialog.created = +new Date()
-            dialogDatas.addEnvDialog.updated = +new Date()
-            dialogDatas.addEnvDialog.status = 1
-            query = axios.post('/api/envs', dialogDatas.addEnvDialog)
+            dialogDatas.env.created = +new Date()
+            dialogDatas.env.updated = +new Date()
+            dialogDatas.env.status = 1
+            query = axios.post('/api/envs', dialogDatas.env)
           }
 
           query.then((res) => {
@@ -94,10 +91,10 @@ export default defineComponent({
               ElNotification({
                 type: 'success',
                 title: tips,
-                message: `${dialogDatas.addEnvDialog.name}环境,${tips}!`,
+                message: `${dialogDatas.env.name}环境,${tips}!`,
               })
 
-              dialogStatus.addEnvDialog = false
+              dialogStatus.env = false
             }
           })
         } else {
@@ -110,21 +107,40 @@ export default defineComponent({
         }
       })
     }
+    //! ------------------------------------------------------- Env End
 
-    getEnvDatas()
+    //! ------------------------------------------------------- Link Begin
+    const addLinkDialog = ref()
+    const addLinkDialogRules = reactive({})
+
+    const handlerLinkEdit = (index: number, row: any) => {
+      dialogStatus.link = true
+      dialogDatas.link = row
+    }
+
+    const getLinkDatas = async () => {
+      const res = await axios.get('/api/links')
+      tableData.links = res.data
+    }
+    //! ------------------------------------------------------- Link End
+
+    onMounted(() => {
+      Promise.all([getEnvDatas(), getLinkDatas()])
+    })
 
     return {
       formData,
       tableData,
-      openAddEnvDialog,
       handlerEnvEdit,
       handlerEnvEditSubmit,
       addEnvDialog,
       addEnvDialogRules,
       dialogStatus,
       dialogDatas,
-      loading,
-      envTableRef,
+
+      handlerLinkEdit,
+      addLinkDialog,
+      addLinkDialogRules,
     }
   },
 

@@ -2,8 +2,8 @@
   "envs": [
     {
       "id": 1,
-      "name": "PRD1",
-      "address": "https://sjkh.essence.com.cn/h5kh/index.htm",
+      "name": "生产环境",
+      "address": "https://sjkh.essence.com.cn/",
       "status": 1,
       "created": 1622196562801,
       "updated": 1622451368315
@@ -25,5 +25,14 @@
       "updated": 1622451374121
     }
   ],
-  "links": []
+  "links": [
+    {
+      "id": 1,
+      "name": "同花顺渠道",
+      "address": "thskh/index.htm?branch=9002&qd=ths0002&sceneid=1&bank=5300&tgid=1234",
+      "status": 1,
+      "created": 1622196562801,
+      "updated": 1622451368315
+    }
+  ]
 }
