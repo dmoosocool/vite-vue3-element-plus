@@ -11,6 +11,7 @@ import {
   ElDialog,
   ElLink,
   ElTag,
+  ElAutocomplete,
 } from 'element-plus'
 
 const tpl = (ctx: any) => {
@@ -126,7 +127,7 @@ const tpl = (ctx: any) => {
                 <ElButton
                   type="primary"
                   plain
-                  onClick={() => ctx.handlerEnvEditSubmit()}
+                  onClick={() => ctx.handlerLinkEditSubmit()}
                 >
                   {ctx.dialogDatas.link.id === undefined ? '提交' : '修改'}
                 </ElButton>
@@ -331,6 +332,51 @@ const tpl = (ctx: any) => {
                 }}
               ></ElTableColumn>
             </ElTable>
+          </ElCol>
+        </ElRow>
+
+        <ElRow class="w-full mt-8">
+          <ElCol span={12} offset={6}>
+            <ElForm
+              inline
+              label-width="50px"
+              model={ctx.DownloadResourcePackageData}
+            >
+              <ElFormItem label="环境" prop="env">
+                <ElAutocomplete
+                  modelValue={ctx.selectEnv}
+                  placeholder="请选择环境"
+                  valueKey="name"
+                  fetchSuggestions={ctx.handleSelectEnvOnSearch}
+                  selectWhenUnmatched
+                  highlightFirstItem
+                  onSelect={ctx.handleSelectEnv}
+                  onInput={ctx.handleSelectEnvInput}
+                ></ElAutocomplete>
+              </ElFormItem>
+
+              <ElFormItem label="渠道" prop="address" class="ml-8">
+                <ElAutocomplete
+                  modelValue={ctx.selectLink}
+                  placeholder="请选择渠道"
+                  valueKey="name"
+                  selectWhenUnmatched
+                  highlightFirstItem
+                  fetchSuggestions={ctx.handleSelectLinkOnSearch}
+                  onSelect={ctx.handleSelectLink}
+                  onInput={ctx.handleSelectLinkInput}
+                ></ElAutocomplete>
+              </ElFormItem>
+
+              <ElFormItem>
+                <ElButton
+                  type="primary"
+                  onClick={ctx.handleDownloadResourcePackage}
+                >
+                  下载资源包
+                </ElButton>
+              </ElFormItem>
+            </ElForm>
           </ElCol>
         </ElRow>
       </ElContainer>

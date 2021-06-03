@@ -3,10 +3,10 @@
     {
       "id": 1,
       "name": "生产环境",
-      "address": "https://sjkh.essence.com.cn/",
+      "address": "https://sjkh.essence.com.cn",
       "status": 1,
       "created": 1622196562801,
-      "updated": 1622451368315
+      "updated": 1622701218293
     },
     {
       "name": "PRD3",
@@ -32,7 +32,31 @@
       "address": "thskh/index.htm?branch=9002&qd=ths0002&sceneid=1&bank=5300&tgid=1234",
       "status": 1,
       "created": 1622196562801,
-      "updated": 1622451368315
+      "updated": 1622701225621
+    },
+    {
+      "name": "H5",
+      "address": "h5kh/index.htm",
+      "status": 1,
+      "created": 1622701235465,
+      "updated": 1622701235465,
+      "id": 2
+    },
+    {
+      "name": "活动页面",
+      "address": "activity/index.html",
+      "status": 1,
+      "created": 1622701300372,
+      "updated": 1622701300372,
+      "id": 3
+    },
+    {
+      "name": "H5渠道1",
+      "address": "h5kh/index.htm",
+      "status": 1,
+      "created": 1622701482581,
+      "updated": 1622701482581,
+      "id": 4
     }
   ]
 }
