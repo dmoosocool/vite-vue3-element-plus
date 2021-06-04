@@ -165,18 +165,18 @@ const tpl = (ctx: any) => {
     <>
       <ElContainer direction="vertical">
         <ElRow class="w-full h-5 mt-10">
-          <ElCol span={12} offset={6}></ElCol>
+          <ElCol span={18} offset={2}></ElCol>
         </ElRow>
 
         <ElRow class="w-full mb-2">
-          <ElCol span={12} offset={6}>
+          <ElCol span={18} offset={2}>
             {createEnvFormDialog()}
             {createLinkFormDialog()}
           </ElCol>
         </ElRow>
 
         <ElRow class="w-full">
-          <ElCol span={12} offset={6}>
+          <ElCol span={18} offset={2}>
             <h1 class="mb-4" style={{ fontSize: '20px', fontWeight: 100 }}>
               环境
             </h1>
@@ -184,7 +184,7 @@ const tpl = (ctx: any) => {
         </ElRow>
 
         <ElRow class="w-full">
-          <ElCol span={12} offset={6}>
+          <ElCol span={18} offset={2}>
             <ElTable border stripe data={ctx.tableData.envs} maxHeight="240px">
               <ElTableColumn
                 prop="name"
@@ -202,7 +202,7 @@ const tpl = (ctx: any) => {
                   )
                 }}
               ></ElTableColumn>
-              <ElTableColumn
+              {/* <ElTableColumn
                 width="80"
                 label="状态"
                 sortable
@@ -218,7 +218,7 @@ const tpl = (ctx: any) => {
                     </ElTag>
                   )
                 }}
-              ></ElTableColumn>
+              ></ElTableColumn> */}
               <ElTableColumn
                 label="添加日期"
                 width="180"
@@ -261,7 +261,7 @@ const tpl = (ctx: any) => {
         </ElRow>
 
         <ElRow class="w-full mt-8">
-          <ElCol span={12} offset={6}>
+          <ElCol span={18} offset={2}>
             <h1 class="mb-4" style={{ fontSize: '20px', fontWeight: 100 }}>
               渠道链接
             </h1>
@@ -269,7 +269,7 @@ const tpl = (ctx: any) => {
         </ElRow>
 
         <ElRow class="w-full">
-          <ElCol span={12} offset={6}>
+          <ElCol span={18} offset={2}>
             <ElTable border stripe data={ctx.tableData.links} maxHeight="240px">
               <ElTableColumn
                 prop="name"
@@ -277,7 +277,7 @@ const tpl = (ctx: any) => {
                 width="180"
               ></ElTableColumn>
               <ElTableColumn prop="address" label="渠道地址"></ElTableColumn>
-              <ElTableColumn
+              {/* <ElTableColumn
                 width="80"
                 label="状态"
                 sortable
@@ -293,7 +293,7 @@ const tpl = (ctx: any) => {
                     </ElTag>
                   )
                 }}
-              ></ElTableColumn>
+              ></ElTableColumn> */}
               <ElTableColumn
                 label="添加日期"
                 width="180"
@@ -336,7 +336,7 @@ const tpl = (ctx: any) => {
         </ElRow>
 
         <ElRow class="w-full mt-8">
-          <ElCol span={12} offset={6}>
+          <ElCol span={18} offset={2}>
             <ElForm
               inline
               label-width="50px"
@@ -379,6 +379,21 @@ const tpl = (ctx: any) => {
             </ElForm>
           </ElCol>
         </ElRow>
+
+        {ctx.previewString && (
+          <ElRow class="w-full mt-8">
+            <ElCol span={18} offset={2}>
+              <div class="rounded-t-xl overflow-hidden bg-gradient-to-r from-emerald-50 to-teal-100 p-10">
+                <p class="antialiased text-sm text-emerald-800">
+                  pages/index/index.wxml
+                </p>
+              </div>
+              <pre class="p-10 text-sm bg-black text-white">
+                {ctx.previewString}
+              </pre>
+            </ElCol>
+          </ElRow>
+        )}
       </ElContainer>
     </>
   )

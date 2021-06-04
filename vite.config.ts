@@ -21,6 +21,14 @@ export default defineConfig({
         target: 'http://localhost:3001',
         changeOrigin: true,
       },
+      '/download': {
+        target: 'http://localhost:3001',
+        changeOrigin: true,
+      },
+      '/generate': {
+        target: 'http://localhost:3001',
+        changeOrigin: true,
+      },
     },
   },
   plugins: [

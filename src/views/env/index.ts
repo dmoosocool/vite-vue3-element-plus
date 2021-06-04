@@ -12,9 +12,12 @@ export default defineComponent({
     //! ------------------------------------------------------- Download Resource Package Start
     const DownloadResourcePackageData = ref({ env: {}, link: {} })
     const handleDownloadResourcePackage = () => {
+      const downloadData =
+        DownloadResourcePackageData.value as typeof defaultDatas
+
       if (
-        Object.keys(DownloadResourcePackageData.value.env).length === 0 ||
-        Object.keys(DownloadResourcePackageData.value.link).length === 0
+        Object.keys(downloadData.env).length === 0 ||
+        Object.keys(downloadData.link).length === 0
       ) {
         return ElNotification({
           type: 'error',
@@ -22,6 +25,25 @@ export default defineComponent({
           message: '请选择需要下载资源包的环境及渠道链接',
         })
       }
+
+      const data = {
+        env: encodeURIComponent(downloadData.env.address),
+        link: encodeURIComponent(downloadData.link.address),
+      }
+
+      const url = `/download?${Object.keys(data)
+        .map((key) => `${key}=${(data as any)[key]}`)
+        .join('&')}`
+
+      // axios
+      //   .get(url, {
+      //     responseType: 'arraybuffer',
+      //   })
+      //   .then((res) => {
+      //     let blob = new Blob([res.data])
+      //     let objectUrl = URL.createObjectURL(blob)
+      window.location.href = url
+      // })
     }
     //! ------------------------------------------------------- Download Resource Package End
 
@@ -193,6 +215,9 @@ export default defineComponent({
     //! ------------------------------------------------------- Autocomplete Env Start
     const selectEnv = ref('')
     const selectEnvs = ref([])
+
+    const previewString = ref('')
+
     const handleSelectEnvOnSearch = (
       queryString: string,
       callback: (...arg: any[]) => void
@@ -212,9 +237,28 @@ export default defineComponent({
       }
     }
 
+    const showGeneratorAndShow = () => {
+      const data = DownloadResourcePackageData.value as typeof defaultDatas
+
+      if (
+        Object.keys(data.env).length > 0 &&
+        Object.keys(data.link).length > 0
+      ) {
+        const params = {
+          env: data.env?.address,
+          link: data.link?.address,
+        }
+        axios.post('/generate', params).then((resp) => {
+          previewString.value = resp.data.main
+          console.log(previewString.value)
+        })
+      }
+    }
+
     const handleSelectEnv = (item: any) => {
       selectEnv.value = item.name
       DownloadResourcePackageData.value.env = item
+      showGeneratorAndShow()
     }
 
     const handleSelectEnvInput = (str: string) => {
@@ -250,6 +294,7 @@ export default defineComponent({
     const handleSelectLink = (item: any) => {
       selectLink.value = item.name
       DownloadResourcePackageData.value.link = item
+      showGeneratorAndShow()
     }
 
     const handleSelectLinkInput = (str: string) => {
@@ -294,6 +339,8 @@ export default defineComponent({
 
       DownloadResourcePackageData,
       handleDownloadResourcePackage,
+
+      previewString,
     }
   },
 
